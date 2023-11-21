@@ -3,7 +3,7 @@ package com.ly.datastatisticalanalysis.model.domain;
 import lombok.Data;
 
 @Data
-public class ProximitySwitch {
+public class ProximitySwitchDTO {
     private String VIN;
     private String day;
     private String time;

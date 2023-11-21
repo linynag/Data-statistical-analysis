@@ -1,8 +1,6 @@
 package com.ly.datastatisticalanalysis.service;
 
-import com.ly.datastatisticalanalysis.model.vo.ProximitySwitchVO;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import com.ly.datastatisticalanalysis.model.domain.DaProximitySwitch;
 
 import java.util.List;
 
@@ -19,8 +17,8 @@ public interface ProximitySwitchService {
     /**
      * @return
      */
-    public List<ProximitySwitchVO> CountProximitySwitches();
+    public List<DaProximitySwitch> countProximitySwitches();
 
-    public int insertProximitySwitch(List<ProximitySwitchVO> voList);
+    public int insertProximitySwitch(List<DaProximitySwitch> voList);
 
 }

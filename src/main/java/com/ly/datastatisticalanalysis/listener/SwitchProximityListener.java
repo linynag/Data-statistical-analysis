@@ -2,16 +2,16 @@ package com.ly.datastatisticalanalysis.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.ly.datastatisticalanalysis.model.domain.ProximitySwitch;
+import com.ly.datastatisticalanalysis.model.domain.ProximitySwitchDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SwitchProximityListener extends AnalysisEventListener<ProximitySwitch> {
-    private List<ProximitySwitch> dataList = new ArrayList<>();
+public class SwitchProximityListener extends AnalysisEventListener<ProximitySwitchDTO> {
+    private List<ProximitySwitchDTO> dataList = new ArrayList<>();
 
     @Override
-    public void invoke(ProximitySwitch data, AnalysisContext context) {
+    public void invoke(ProximitySwitchDTO data, AnalysisContext context) {
         // 处理每一行数据
         dataList.add(data);
     }
@@ -22,7 +22,7 @@ public class SwitchProximityListener extends AnalysisEventListener<ProximitySwit
     }
 
     // 获取解析后的数据列表
-    public List<ProximitySwitch> getDataList() {
+    public List<ProximitySwitchDTO> getDataList() {
         return dataList;
     }
 }

@@ -1,13 +1,11 @@
 package com.ly.datastatisticalanalysis.service.impl;
 
-import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.EasyExcelFactory;
 import com.ly.datastatisticalanalysis.listener.SwitchProximityListener;
-import com.ly.datastatisticalanalysis.mapper.DaProximitySwitchMapper;
-import com.ly.datastatisticalanalysis.model.domain.ProximitySwitch;
-import com.ly.datastatisticalanalysis.model.vo.ProximitySwitchVO;
+import com.ly.datastatisticalanalysis.model.domain.DaProximitySwitch;
+import com.ly.datastatisticalanalysis.model.domain.ProximitySwitchDTO;
 import com.ly.datastatisticalanalysis.service.DaProximitySwitchService;
 import com.ly.datastatisticalanalysis.service.ProximitySwitchService;
-import com.ly.datastatisticalanalysis.model.domain.DaProximitySwitch;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,12 +18,12 @@ public class ProximitySwitchImpl implements ProximitySwitchService {
     @Resource
     private DaProximitySwitchService daProximitySwitchService;
 
-    public static List<ProximitySwitchVO> analyzeSwitches(List<ProximitySwitch> proximitySwitchList) {
+    public static List<DaProximitySwitch> analyzeSwitches(List<ProximitySwitchDTO> proximitySwitchList) {
         Map<String, Map<String, Map<String, Integer>>> result = new HashMap<>();
 
         for (int i = 0; i < proximitySwitchList.size() - 1; i++) {
-            ProximitySwitch currentSwitch = proximitySwitchList.get(i);
-            ProximitySwitch nextSwitch = proximitySwitchList.get(i + 1);
+            ProximitySwitchDTO currentSwitch = proximitySwitchList.get(i);
+            ProximitySwitchDTO nextSwitch = proximitySwitchList.get(i + 1);
 
             // 按VIN和日期进行分类
             String vin = currentSwitch.getVIN();
@@ -34,14 +32,14 @@ public class ProximitySwitchImpl implements ProximitySwitchService {
             result.putIfAbsent(vin, new HashMap<>());
             result.get(vin).putIfAbsent(day, new HashMap<>());
 
-            // 统计InputSignal变化次数
+            // 统计每个InputSignal变化次数
             countSignalChanges(result.get(vin).get(day), currentSwitch, nextSwitch);
         }
         // 转换为ProximitySwitchVO对象列表
         return convertToProximitySwitchVOList(result);
     }
 
-    private static void countSignalChanges(Map<String, Integer> signalChanges, ProximitySwitch currentSwitch, ProximitySwitch nextSwitch) {
+    private static void countSignalChanges(Map<String, Integer> signalChanges, ProximitySwitchDTO currentSwitch, ProximitySwitchDTO nextSwitch) {
         for (int i = 0; i <= 15; i++) {
             String signalName = "InputSignal" + i;
             String currentValue = getSignalValue(currentSwitch, signalName);
@@ -53,40 +51,40 @@ public class ProximitySwitchImpl implements ProximitySwitchService {
         }
     }
 
-    private static List<ProximitySwitchVO> convertToProximitySwitchVOList(Map<String, Map<String, Map<String, Integer>>> result) {
-        List<ProximitySwitchVO> voList = new ArrayList<>();
+    private static List<DaProximitySwitch> convertToProximitySwitchVOList(Map<String, Map<String, Map<String, Integer>>> result) {
+
+        List<DaProximitySwitch> list = new ArrayList<>();
 
         for (Map.Entry<String, Map<String, Map<String, Integer>>> entry : result.entrySet()) {
             for (Map.Entry<String, Map<String, Integer>> innerEntry : entry.getValue().entrySet()) {
-                ProximitySwitchVO vo = new ProximitySwitchVO();
-                vo.setVIN(entry.getKey());
-                vo.setDay(innerEntry.getKey());
-                vo.setCountInputSignal0(innerEntry.getValue().getOrDefault("InputSignal0", 0).toString());
-                vo.setCountInputSignal1(innerEntry.getValue().getOrDefault("InputSignal1", 0).toString());
-                vo.setCountInputSignal2(innerEntry.getValue().getOrDefault("InputSignal2", 0).toString());
-                vo.setCountInputSignal3(innerEntry.getValue().getOrDefault("InputSignal3", 0).toString());
-                vo.setCountInputSignal4(innerEntry.getValue().getOrDefault("InputSignal4", 0).toString());
-                vo.setCountInputSignal5(innerEntry.getValue().getOrDefault("InputSignal5", 0).toString());
-                vo.setCountInputSignal6(innerEntry.getValue().getOrDefault("InputSignal6", 0).toString());
-                vo.setCountInputSignal7(innerEntry.getValue().getOrDefault("InputSignal7", 0).toString());
-                vo.setCountInputSignal8(innerEntry.getValue().getOrDefault("InputSignal8", 0).toString());
-                vo.setCountInputSignal9(innerEntry.getValue().getOrDefault("InputSignal9", 0).toString());
-                vo.setCountInputSignal10(innerEntry.getValue().getOrDefault("InputSignal10", 0).toString());
-                vo.setCountInputSignal11(innerEntry.getValue().getOrDefault("InputSignal11", 0).toString());
-                vo.setCountInputSignal12(innerEntry.getValue().getOrDefault("InputSignal12", 0).toString());
-                vo.setCountInputSignal13(innerEntry.getValue().getOrDefault("InputSignal13", 0).toString());
-                vo.setCountInputSignal14(innerEntry.getValue().getOrDefault("InputSignal14", 0).toString());
-                vo.setCountInputSignal15(innerEntry.getValue().getOrDefault("InputSignal15", 0).toString());
+                DaProximitySwitch da = new DaProximitySwitch();
+                da.setVin(entry.getKey());
+                da.setDay(LocalDate.parse(innerEntry.getKey()));
 
-
-                voList.add(vo);
+                da.setCountInputSignal0(innerEntry.getValue().getOrDefault("InputSignal0", 0) / 2);
+                da.setCountInputSignal1(innerEntry.getValue().getOrDefault("InputSignal1", 0) / 2);
+                da.setCountInputSignal2(innerEntry.getValue().getOrDefault("InputSignal2", 0) / 2);
+                da.setCountInputSignal3(innerEntry.getValue().getOrDefault("InputSignal3", 0) / 2);
+                da.setCountInputSignal4(innerEntry.getValue().getOrDefault("InputSignal4", 0) / 2);
+                da.setCountInputSignal5(innerEntry.getValue().getOrDefault("InputSignal5", 0) / 2);
+                da.setCountInputSignal6(innerEntry.getValue().getOrDefault("InputSignal6", 0) / 2);
+                da.setCountInputSignal7(innerEntry.getValue().getOrDefault("InputSignal7", 0) / 2);
+                da.setCountInputSignal8(innerEntry.getValue().getOrDefault("InputSignal8", 0) / 2);
+                da.setCountInputSignal9(innerEntry.getValue().getOrDefault("InputSignal9", 0) / 2);
+                da.setCountInputSignal10(innerEntry.getValue().getOrDefault("InputSignal10", 0) / 2);
+                da.setCountInputSignal11(innerEntry.getValue().getOrDefault("InputSignal11", 0) / 2);
+                da.setCountInputSignal12(innerEntry.getValue().getOrDefault("InputSignal12", 0) / 2);
+                da.setCountInputSignal13(innerEntry.getValue().getOrDefault("InputSignal13", 0) / 2);
+                da.setCountInputSignal14(innerEntry.getValue().getOrDefault("InputSignal14", 0) / 2);
+                da.setCountInputSignal15(innerEntry.getValue().getOrDefault("InputSignal15", 0) / 2);
+                list.add(da);
             }
         }
 
-        return voList;
+        return list;
     }
 
-    private static String getSignalValue(ProximitySwitch proximitySwitch, String signalName) {
+    private static String getSignalValue(ProximitySwitchDTO proximitySwitch, String signalName) {
         switch (signalName) {
             case "InputSignal0":
                 return proximitySwitch.getInputSignal0();
@@ -126,86 +124,30 @@ public class ProximitySwitchImpl implements ProximitySwitchService {
         }
     }
 
-    private static void processVoList(List<ProximitySwitchVO> voList) {
-        for (ProximitySwitchVO vo : voList) {
-            vo.setCountInputSignal0(processCount(vo.getCountInputSignal0()));
-            vo.setCountInputSignal1(processCount(vo.getCountInputSignal1()));
-            vo.setCountInputSignal2(processCount(vo.getCountInputSignal2()));
-            vo.setCountInputSignal3(processCount(vo.getCountInputSignal3()));
-            vo.setCountInputSignal4(processCount(vo.getCountInputSignal4()));
-            vo.setCountInputSignal5(processCount(vo.getCountInputSignal5()));
-            vo.setCountInputSignal6(processCount(vo.getCountInputSignal6()));
-            vo.setCountInputSignal7(processCount(vo.getCountInputSignal7()));
-            vo.setCountInputSignal8(processCount(vo.getCountInputSignal8()));
-            vo.setCountInputSignal9(processCount(vo.getCountInputSignal9()));
-            vo.setCountInputSignal10(processCount(vo.getCountInputSignal10()));
-            vo.setCountInputSignal11(processCount(vo.getCountInputSignal11()));
-            vo.setCountInputSignal12(processCount(vo.getCountInputSignal12()));
-            vo.setCountInputSignal13(processCount(vo.getCountInputSignal13()));
-            vo.setCountInputSignal14(processCount(vo.getCountInputSignal14()));
-            vo.setCountInputSignal15(processCount(vo.getCountInputSignal15()));
-        }
-    }
-
-    private static String processCount(String count) {
-        if (count != null && !count.isEmpty()) {
-            double doubleCount = Double.parseDouble(count) / 2.0;
-            // Round to the nearest integer
-            int roundedCount = (int) Math.round(doubleCount);
-            return Integer.toString(roundedCount);
-        }
-        return "0";
-    }
 
     @Override
-    public List<ProximitySwitchVO> CountProximitySwitches() {
+    public List<DaProximitySwitch> countProximitySwitches() {
         // 定义CSV文件路径
         String filePath = "E:\\Python_code\\bigdata-analysis-model\\proximity_switches\\query_data\\proximity_switches\\202310\\20231003.csv";
         // 创建 ExcelReaderBuilder 对象，并在构造函数中传入监听器实例
         SwitchProximityListener listener = new SwitchProximityListener();
-        EasyExcel.read(filePath, ProximitySwitch.class, listener).sheet().doRead();
+        EasyExcelFactory.read(filePath, ProximitySwitchDTO.class, listener).sheet().doRead();
 
-        List<ProximitySwitch> dataList = listener.getDataList();
+        List<ProximitySwitchDTO> dataList = listener.getDataList();
 
         // 使用Lambda表达式和Comparator进行排序
         dataList.sort(
-                Comparator.comparing(ProximitySwitch::getVIN)
-                        .thenComparing(ProximitySwitch::getDay)
-                        .thenComparing(ProximitySwitch::getTime)
+                Comparator.comparing(ProximitySwitchDTO::getVIN)
+                        .thenComparing(ProximitySwitchDTO::getDay)
+                        .thenComparing(ProximitySwitchDTO::getTime)
         );
-        List<ProximitySwitchVO> voList = analyzeSwitches(dataList);
-        // 对次数/2，进行四舍五入
-        processVoList(voList);
 
-        return voList;
+        return analyzeSwitches(dataList);
     }
 
     @Override
-    public int insertProximitySwitch(List<ProximitySwitchVO> voList) {
-        List<DaProximitySwitch> daProximitySwitches = new ArrayList<>();
-        for (ProximitySwitchVO vo : voList) {
-            DaProximitySwitch daProximitySwitch = new DaProximitySwitch();
-            daProximitySwitch.setVin(vo.getVIN());
-            daProximitySwitch.setDay(LocalDate.parse(vo.getDay()));
-            daProximitySwitch.setCountInputSignal0(Integer.valueOf(vo.getCountInputSignal0()));
-            daProximitySwitch.setCountInputSignal1(Integer.valueOf(vo.getCountInputSignal1()));
-            daProximitySwitch.setCountInputSignal2(Integer.valueOf(vo.getCountInputSignal2()));
-            daProximitySwitch.setCountInputSignal3(Integer.valueOf(vo.getCountInputSignal3()));
-            daProximitySwitch.setCountInputSignal4(Integer.valueOf(vo.getCountInputSignal4()));
-            daProximitySwitch.setCountInputSignal5(Integer.valueOf(vo.getCountInputSignal5()));
-            daProximitySwitch.setCountInputSignal6(Integer.valueOf(vo.getCountInputSignal6()));
-            daProximitySwitch.setCountInputSignal7(Integer.valueOf(vo.getCountInputSignal7()));
-            daProximitySwitch.setCountInputSignal8(Integer.valueOf(vo.getCountInputSignal8()));
-            daProximitySwitch.setCountInputSignal9(Integer.valueOf(vo.getCountInputSignal9()));
-            daProximitySwitch.setCountInputSignal10(Integer.valueOf(vo.getCountInputSignal10()));
-            daProximitySwitch.setCountInputSignal11(Integer.valueOf(vo.getCountInputSignal11()));
-            daProximitySwitch.setCountInputSignal12(Integer.valueOf(vo.getCountInputSignal12()));
-            daProximitySwitch.setCountInputSignal13(Integer.valueOf(vo.getCountInputSignal13()));
-            daProximitySwitch.setCountInputSignal14(Integer.valueOf(vo.getCountInputSignal14()));
-            daProximitySwitch.setCountInputSignal15(Integer.valueOf(vo.getCountInputSignal15()));
-            daProximitySwitches.add(daProximitySwitch);
-        }
-        boolean b = daProximitySwitchService.saveOrUpdateBatchByMultiId(daProximitySwitches);
+    public int insertProximitySwitch(List<DaProximitySwitch> voList) {
+        boolean b = daProximitySwitchService.saveOrUpdateBatchByMultiId(voList);
         return b ? 1 : 0;
     }
 
