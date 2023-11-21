@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ly.datastatisticalanalysis.mapper.DaProximitySwitchMapper">
+
+    <resultMap id="BaseResultMap" type="com.ly.datastatisticalanalysis.model.domain.DaProximitySwitch">
+            <id property="vin" column="vin" jdbcType="VARCHAR"/>
+            <id property="day" column="day" jdbcType="DATE"/>
+            <result property="countInputSignal0" column="count_input_signal0" jdbcType="INTEGER"/>
+            <result property="countInputSignal1" column="count_input_signal1" jdbcType="INTEGER"/>
+            <result property="countInputSignal2" column="count_input_signal2" jdbcType="INTEGER"/>
+            <result property="countInputSignal3" column="count_input_signal3" jdbcType="INTEGER"/>
+            <result property="countInputSignal4" column="count_input_signal4" jdbcType="INTEGER"/>
+            <result property="countInputSignal5" column="count_input_signal5" jdbcType="INTEGER"/>
+            <result property="countInputSignal6" column="count_input_signal6" jdbcType="INTEGER"/>
+            <result property="countInputSignal7" column="count_input_signal7" jdbcType="INTEGER"/>
+            <result property="countInputSignal8" column="count_input_signal8" jdbcType="INTEGER"/>
+            <result property="countInputSignal9" column="count_input_signal9" jdbcType="INTEGER"/>
+            <result property="countInputSignal10" column="count_input_signal10" jdbcType="INTEGER"/>
+            <result property="countInputSignal11" column="count_input_signal11" jdbcType="INTEGER"/>
+            <result property="countInputSignal12" column="count_input_signal12" jdbcType="INTEGER"/>
+            <result property="countInputSignal13" column="count_input_signal13" jdbcType="INTEGER"/>
+            <result property="countInputSignal14" column="count_input_signal14" jdbcType="INTEGER"/>
+            <result property="countInputSignal15" column="count_input_signal15" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        vin,day,count_input_signal0,
+        count_input_signal1,count_input_signal2,count_input_signal3,
+        count_input_signal4,count_input_signal5,count_input_signal6,
+        count_input_signal7,count_input_signal8,count_input_signal9,
+        count_input_signal10,count_input_signal11,count_input_signal12,
+        count_input_signal13,count_input_signal14,count_input_signal15
+    </sql>
+</mapper>
