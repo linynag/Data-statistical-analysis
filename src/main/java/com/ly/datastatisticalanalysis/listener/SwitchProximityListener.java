@@ -2,7 +2,7 @@ package com.ly.datastatisticalanalysis.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.ly.datastatisticalanalysis.model.domain.ProximitySwitchDTO;
+import com.ly.datastatisticalanalysis.model.dto.ProximitySwitchDTO;
 
 import java.util.ArrayList;
 import java.util.List;

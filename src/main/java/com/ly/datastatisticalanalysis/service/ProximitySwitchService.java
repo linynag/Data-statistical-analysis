@@ -1,6 +1,6 @@
 package com.ly.datastatisticalanalysis.service;
 
-import com.ly.datastatisticalanalysis.model.domain.DaProximitySwitch;
+import com.ly.datastatisticalanalysis.model.entity.DaProximitySwitch;
 
 import java.util.List;
 
@@ -11,14 +11,16 @@ import java.util.List;
  **/
 
 
-
 public interface ProximitySwitchService {
 
     /**
-     * @return
+     * 统计接近开关次数
      */
-    public List<DaProximitySwitch> countProximitySwitches();
+    List<DaProximitySwitch> countProximitySwitches(String filePath);
 
-    public int insertProximitySwitch(List<DaProximitySwitch> voList);
+    /**
+     * 写入数据库
+     */
+    int insertProximitySwitch(List<DaProximitySwitch> voList);
 
 }

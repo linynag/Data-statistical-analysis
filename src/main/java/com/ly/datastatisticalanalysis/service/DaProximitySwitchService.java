@@ -1,7 +1,7 @@
 package com.ly.datastatisticalanalysis.service;
 
 import com.github.jeffreyning.mybatisplus.service.IMppService;
-import com.ly.datastatisticalanalysis.model.domain.DaProximitySwitch;
+import com.ly.datastatisticalanalysis.model.entity.DaProximitySwitch;
 
 /**
 * @author EDY

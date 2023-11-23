@@ -2,7 +2,7 @@ package com.ly.datastatisticalanalysis.service.impl;
 
 import com.github.jeffreyning.mybatisplus.service.MppServiceImpl;
 import com.ly.datastatisticalanalysis.mapper.DaProximitySwitchMapper;
-import com.ly.datastatisticalanalysis.model.domain.DaProximitySwitch;
+import com.ly.datastatisticalanalysis.model.entity.DaProximitySwitch;
 import com.ly.datastatisticalanalysis.service.DaProximitySwitchService;
 import org.springframework.stereotype.Service;
 

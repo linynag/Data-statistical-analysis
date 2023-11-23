@@ -1,4 +1,4 @@
-package com.ly.datastatisticalanalysis.model.domain;
+package com.ly.datastatisticalanalysis.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;

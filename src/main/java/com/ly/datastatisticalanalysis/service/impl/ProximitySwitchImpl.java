@@ -2,8 +2,8 @@ package com.ly.datastatisticalanalysis.service.impl;
 
 import com.alibaba.excel.EasyExcelFactory;
 import com.ly.datastatisticalanalysis.listener.SwitchProximityListener;
-import com.ly.datastatisticalanalysis.model.domain.DaProximitySwitch;
-import com.ly.datastatisticalanalysis.model.domain.ProximitySwitchDTO;
+import com.ly.datastatisticalanalysis.model.entity.DaProximitySwitch;
+import com.ly.datastatisticalanalysis.model.dto.ProximitySwitchDTO;
 import com.ly.datastatisticalanalysis.service.DaProximitySwitchService;
 import com.ly.datastatisticalanalysis.service.ProximitySwitchService;
 import org.springframework.stereotype.Service;
@@ -126,9 +126,8 @@ public class ProximitySwitchImpl implements ProximitySwitchService {
 
 
     @Override
-    public List<DaProximitySwitch> countProximitySwitches() {
+    public List<DaProximitySwitch> countProximitySwitches(String filePath ) {
         // 定义CSV文件路径
-        String filePath = "E:\\Python_code\\bigdata-analysis-model\\proximity_switches\\query_data\\proximity_switches\\202310\\20231003.csv";
         // 创建 ExcelReaderBuilder 对象，并在构造函数中传入监听器实例
         SwitchProximityListener listener = new SwitchProximityListener();
         EasyExcelFactory.read(filePath, ProximitySwitchDTO.class, listener).sheet().doRead();
@@ -150,5 +149,4 @@ public class ProximitySwitchImpl implements ProximitySwitchService {
         boolean b = daProximitySwitchService.saveOrUpdateBatchByMultiId(voList);
         return b ? 1 : 0;
     }
-
 }

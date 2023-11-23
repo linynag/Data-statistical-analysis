@@ -1,8 +1,7 @@
 package com.ly.datastatisticalanalysis.mapper;
 
 import com.github.jeffreyning.mybatisplus.base.MppBaseMapper;
-import com.ly.datastatisticalanalysis.model.domain.DaProximitySwitch;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ly.datastatisticalanalysis.model.entity.DaProximitySwitch;
 
 /**
 * @author EDY

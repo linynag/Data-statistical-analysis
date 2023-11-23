@@ -1,4 +1,4 @@
-package com.ly.datastatisticalanalysis.model.domain;
+package com.ly.datastatisticalanalysis.model.dto;
 
 import lombok.Data;
 
