@@ -21,7 +21,7 @@ class WaterConsumptionImplTest {
             WaterLevelPressureDTO current = waterLevelPressureList.get(i);
             WaterLevelPressureDTO next = waterLevelPressureList.get(i + 1);
 
-            String vin = current.getVIN();
+            String vin = current.getVin();
             String day = current.getDay();
 
             result.putIfAbsent(vin, new HashMap<>());
@@ -84,7 +84,7 @@ class WaterConsumptionImplTest {
         // dataList.stream().filter(WaterLevelPressureDTO::getWaterLevelPressure).forEach(System.out::println);
 
         dataList.sort(
-                Comparator.comparing(WaterLevelPressureDTO::getVIN)
+                Comparator.comparing(WaterLevelPressureDTO::getVin)
                         .thenComparing(WaterLevelPressureDTO::getDay)
                         .thenComparing(WaterLevelPressureDTO::getTime));
 

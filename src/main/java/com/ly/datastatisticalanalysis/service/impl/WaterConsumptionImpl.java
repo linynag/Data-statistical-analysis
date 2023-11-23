@@ -19,7 +19,7 @@ public class WaterConsumptionImpl implements WaterConsumptionService {
         EasyExcelFactory.read(filePath, WaterConsumptionListener.class, listener).sheet().doRead();
         List<WaterLevelPressureDTO> dataList = listener.getDataList();
         dataList.sort(
-                Comparator.comparing(WaterLevelPressureDTO::getVIN)
+                Comparator.comparing(WaterLevelPressureDTO::getVin)
                         .thenComparing(WaterLevelPressureDTO::getDay)
                         .thenComparing(WaterLevelPressureDTO::getTime)
         );
