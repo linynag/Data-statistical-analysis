@@ -1,4 +1,4 @@
-package com.ly.datastatisticalanalysis.machineLearning;
+package com.ly.datastatisticalanalysis.machinelearning;
 
 import com.huaban.analysis.jieba.JiebaSegmenter;
 import com.huaban.analysis.jieba.SegToken;

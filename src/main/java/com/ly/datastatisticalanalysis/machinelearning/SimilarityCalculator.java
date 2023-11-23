@@ -1,13 +1,8 @@
-package com.ly.datastatisticalanalysis.machineLearning;
-
-import com.huaban.analysis.jieba.JiebaSegmenter;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.RealVector;
+package com.ly.datastatisticalanalysis.machinelearning;
 
 import java.util.*;
 
-import static com.ly.datastatisticalanalysis.machineLearning.TFIDFUtils.*;
-import static com.ly.datastatisticalanalysis.machineLearning.cosineSimilarityUtils.getSimilarStatements;
+import static com.ly.datastatisticalanalysis.machinelearning.CosineSimilarityUtils.getSimilarStatements;
 
 public class SimilarityCalculator {
 

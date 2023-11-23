@@ -1,13 +1,13 @@
-package com.ly.datastatisticalanalysis.machineLearning;
+package com.ly.datastatisticalanalysis.machinelearning;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.ly.datastatisticalanalysis.machineLearning.TFIDFUtils.*;
+import static com.ly.datastatisticalanalysis.machinelearning.TFIDFUtils.*;
 
-public class cosineSimilarityUtils {
+public class CosineSimilarityUtils {
     private static final double EPSILON = 1e-10;
 
     // 计算余弦相似度
@@ -58,6 +58,11 @@ public class cosineSimilarityUtils {
             double similarity = cosineSimilarity(newTFIDF, docVector);
             similarities.add(similarity);
         }
+
+        for (int i = 0; i < similarities.size(); i++) {
+            System.out.println("语句： " + documents.get(i)+ " \t 余弦相似度： " + similarities.get(i));
+        }
+
 
         // 获取相似度最高的前 topN 个语句
         List<String> result = new ArrayList<>();
