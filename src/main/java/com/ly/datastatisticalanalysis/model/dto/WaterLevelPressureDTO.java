@@ -12,6 +12,7 @@ public class WaterLevelPressureDTO {
     private String day;
     private String time;
     private String waterLevelPressure;
+    private String vehicleSpeed;
 
     // 新增方法，将String类型的时间转换为Date类型
     public Date parseTimeString() throws ParseException {
