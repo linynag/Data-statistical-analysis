@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ly.datastatisticalanalysis.mapper.DaWaterHeightMapper">
+
+    <resultMap id="BaseResultMap" type="com.ly.datastatisticalanalysis.model.entity.DaWaterHeight">
+            <id property="vin" column="VIN" jdbcType="VARCHAR"/>
+            <id property="day" column="day" jdbcType="DATE"/>
+            <id property="time" column="time" jdbcType="TIMESTAMP"/>
+            <result property="addWaterCount" column="add_water_count" jdbcType="INTEGER"/>
+            <result property="addWaterQuantity" column="add_water_quantity" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        VIN,day,time,
+        add_water_count,add_water_quantity
+    </sql>
+</mapper>
