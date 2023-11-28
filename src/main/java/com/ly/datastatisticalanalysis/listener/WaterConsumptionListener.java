@@ -19,9 +19,7 @@ public class WaterConsumptionListener extends AnalysisEventListener<WaterLevelPr
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
-        for (WaterLevelPressureDTO waterLevelPressureDTO : dataList) {
-            log.info(waterLevelPressureDTO.toString());
-        }
+        // Do nothing because of X and Y.
     }
 
     public List<WaterLevelPressureDTO> getDataList() {
