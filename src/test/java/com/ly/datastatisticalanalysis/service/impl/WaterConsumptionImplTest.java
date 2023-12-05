@@ -32,12 +32,13 @@ class WaterConsumptionImplTest {
         // 单车一天所有行程的统计
         List<List<WaterLevelPressureDTO>> trips = new ArrayList<>();
 
-        // 遍历数据，按时间段划分行程
+        // 遍历数据，按时间段划分行程 currentTrip 每个行程
         List<WaterLevelPressureDTO> currentTrip = new ArrayList<>();
         for (int i = 0; i < waterLevelPressureList.size() - 1; i++) {
             WaterLevelPressureDTO current = waterLevelPressureList.get(i);
             WaterLevelPressureDTO next = waterLevelPressureList.get(i + 1);
 
+            // 将当前行程加入行程列表
             currentTrip.add(current);
 
             // 判断是否为新的时间段
@@ -157,6 +158,10 @@ class WaterConsumptionImplTest {
 
     private static boolean isStartOfNewTrip(WaterLevelPressureDTO current, WaterLevelPressureDTO next) {
         try {
+            // 判断是否VIN相同，如果不同则为新的时间段
+            if (!current.getVin().equals(next.getVin())) {
+                return true;
+            }
             Date currentTime = current.parseTimeString();
             Date nextTime = next.parseTimeString();
 
@@ -167,19 +172,6 @@ class WaterConsumptionImplTest {
         } catch (ParseException e) {
             e.printStackTrace();
             return false;
-        }
-    }
-
-    private static void printResult(Map<String, Map<String, Map<String, Integer>>> result) {
-        // 打印结果
-        for (Map.Entry<String, Map<String, Map<String, Integer>>> entry : result.entrySet()) {
-            System.out.println("VIN: " + entry.getKey());
-            for (Map.Entry<String, Map<String, Integer>> dayEntry : entry.getValue().entrySet()) {
-                System.out.println("  Day: " + dayEntry.getKey());
-                for (Map.Entry<String, Integer> statEntry : dayEntry.getValue().entrySet()) {
-                    System.out.println("    " + statEntry.getKey() + ": " + statEntry.getValue());
-                }
-            }
         }
     }
 
@@ -221,7 +213,7 @@ class WaterConsumptionImplTest {
     @Test
     void testHandleProximitySwitchALLFile() {
 
-        String directoryPath = "E:\\Python_code\\bigdata-analysis-model\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202310\\";
+        String directoryPath = "E:\\Python_code\\bigdata-analysis-model\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202311\\";
 
         File directory = new File(directoryPath);
         File[] files = directory.listFiles();
@@ -236,7 +228,7 @@ class WaterConsumptionImplTest {
         }
     }
 
-    boolean insertHeightData( List<DaWaterHeight> waterHeights) {
+    boolean insertHeightData(List<DaWaterHeight> waterHeights) {
         return daWaterHeightService.saveOrUpdateBatchByMultiId(waterHeights);
     }
 
@@ -245,7 +237,7 @@ class WaterConsumptionImplTest {
      */
     @Test
     void test() {
-        String filePath = "E:\\Python_code\\bigdata-analysis-model\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202310\\merged_water_height_20231009.csv";
+        String filePath = "E:\\Python_code\\bigdata-analysis-model\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202311\\merged_water_height_20231101.csv";
 //        insertHeightData(calculatedWaterConsumption(filePath));
         List<DaWaterHeight> waterHeights = calculatedWaterConsumption(filePath);
         insertHeightData(waterHeights);
