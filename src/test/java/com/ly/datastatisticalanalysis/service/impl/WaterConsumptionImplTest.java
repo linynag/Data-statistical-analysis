@@ -5,6 +5,7 @@ import com.ly.datastatisticalanalysis.listener.WaterConsumptionListener;
 import com.ly.datastatisticalanalysis.model.dto.WaterLevelPressureDTO;
 import com.ly.datastatisticalanalysis.model.entity.DaWaterHeight;
 import com.ly.datastatisticalanalysis.service.DaWaterHeightService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +20,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@Slf4j
 class WaterConsumptionImplTest {
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -74,6 +76,9 @@ class WaterConsumptionImplTest {
             WaterLevelPressureDTO first = trip.get(0);
             WaterLevelPressureDTO last = trip.get(trip.size() - 1);
 
+            WaterLevelPressureDTO max = trip.stream()
+                    .max(Comparator.comparingDouble(dto -> dto.parseWaterLevelPressureString())).orElse(null);
+
             String vin = first.getVin();
             String day = first.getDay();
 
@@ -84,23 +89,30 @@ class WaterConsumptionImplTest {
 
             // 判断单个行程内是否有正常加水
             double waterLevelChange = last.parseWaterLevelPressureString() - first.parseWaterLevelPressureString();
+
             if (waterLevelChange > 20) {
                 DaWaterHeight daWaterHeight = new DaWaterHeight();
 
-
+                double maxLevelChange = last.parseWaterLevelPressureString() - first.parseWaterLevelPressureString();
                 daWaterHeight.setVin(vin);
                 daWaterHeight.setDay(LocalDate.parse(day));
                 LocalDateTime dateTime = LocalDateTime.parse(first.getTime(), formatter);
                 daWaterHeight.setTime(dateTime);
-                daWaterHeight.setAddWaterQuantity((int) waterLevelChange);
+                daWaterHeight.setAddWaterQuantity((int) maxLevelChange);
                 daWaterHeight.setAddWaterCount(1);
                 waterHeights.add(daWaterHeight);
 
                 // 记录为正常的加水
-                dayStats.put("addWaterCount", dayStats.getOrDefault("waterAdded", 0) + (int) waterLevelChange);
-                String format = String.format("单个行程加水： 车辆：%s  时间： %s 水位增加 %d \n", vin, first.getTime(), (int) waterLevelChange);
+                dayStats.put("addWaterCount", dayStats.getOrDefault("waterAdded", 0) + (int) maxLevelChange);
+                String format = String.format("单个行程加水： 车辆：%s  时间： %s 水位增加 %d \n", vin, first.getTime(), (int) maxLevelChange);
                 System.out.printf(format);
                 dayStats.put("addWaterQuantity", dayStats.getOrDefault("waterAdditionCount", 0) + 1);
+
+                log.info("{} , {}  ", first.getVin(), first.getDay());
+                log.info("{} , {} ", first.getTime(), first.parseWaterLevelPressureString());
+                log.info("{} , {} ", last.getTime(), last.parseWaterLevelPressureString());
+                log.info("{} , {} ", max.getTime(), max.parseWaterLevelPressureString());
+
 
             }
         }
@@ -240,7 +252,7 @@ class WaterConsumptionImplTest {
         String filePath = "E:\\Python_code\\bigdata-analysis-model\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202311\\merged_water_height_20231101.csv";
 //        insertHeightData(calculatedWaterConsumption(filePath));
         List<DaWaterHeight> waterHeights = calculatedWaterConsumption(filePath);
-        insertHeightData(waterHeights);
+//        insertHeightData(waterHeights);
     }
 
 
