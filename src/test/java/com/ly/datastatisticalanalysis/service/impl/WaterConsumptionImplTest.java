@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,7 +28,7 @@ class WaterConsumptionImplTest {
     @Autowired
     private DaWaterHeightService daWaterHeightService;
 
-    public static List<DaWaterHeight> analyzeWaterHeight(List<WaterLevelPressureDTO> waterLevelPressureList) {
+    public static List<DaWaterHeight> analyzeWaterHeightSingleTrip(List<WaterLevelPressureDTO> waterLevelPressureList) {
         // 单车每天的统计
         Map<String, Map<String, Map<String, Integer>>> result = new HashMap<>();
         List<DaWaterHeight> waterHeights = new ArrayList<>();
@@ -55,9 +56,40 @@ class WaterConsumptionImplTest {
             trips.add(currentTrip);
         }
 
-        // 遍历所有行程，进行统计
+        // 遍历单个行程，进行统计
         for (List<WaterLevelPressureDTO> trip : trips) {
             analyzeSingleTrip(trip, result, waterHeights);
+        }
+
+        return waterHeights;
+    }
+
+    public static List<DaWaterHeight> analyzeWaterHeightInterTrip(List<WaterLevelPressureDTO> waterLevelPressureList) {
+        // 单车每天的统计
+        Map<String, Map<String, Map<String, Integer>>> result = new HashMap<>();
+        List<DaWaterHeight> waterHeights = new ArrayList<>();
+        // 单车一天所有行程的统计
+        List<List<WaterLevelPressureDTO>> trips = new ArrayList<>();
+
+        // 遍历数据，按时间段划分行程 currentTrip 每个行程
+        List<WaterLevelPressureDTO> currentTrip = new ArrayList<>();
+        for (int i = 0; i < waterLevelPressureList.size() - 1; i++) {
+            WaterLevelPressureDTO current = waterLevelPressureList.get(i);
+            WaterLevelPressureDTO next = waterLevelPressureList.get(i + 1);
+
+            // 将当前行程加入行程列表
+            currentTrip.add(current);
+
+            // 判断是否为新的时间段
+            if (isStartOfNewTrip(current, next)) {
+                trips.add(currentTrip);
+                currentTrip = new ArrayList<>();
+            }
+        }
+
+        // 处理最后一段行程
+        if (!currentTrip.isEmpty()) {
+            trips.add(currentTrip);
         }
 
         // 遍历行程间，进行统计
@@ -65,8 +97,6 @@ class WaterConsumptionImplTest {
             analyzeInterTrip(trips.get(i), trips.get(i + 1), result, waterHeights);
         }
 
-        // 打印结果
-//        printResult(result);
         return waterHeights;
     }
 
@@ -90,7 +120,7 @@ class WaterConsumptionImplTest {
             // 判断单个行程内是否有正常加水
             double waterLevelChange = last.parseWaterLevelPressureString() - first.parseWaterLevelPressureString();
 
-            if (waterLevelChange > 20) {
+            if (waterLevelChange > 30) {
                 DaWaterHeight daWaterHeight = new DaWaterHeight();
 
                 double maxLevelChange = last.parseWaterLevelPressureString() - first.parseWaterLevelPressureString();
@@ -125,6 +155,10 @@ class WaterConsumptionImplTest {
             WaterLevelPressureDTO lastOfFirst = firstTrip.get(firstTrip.size() - 1);
             WaterLevelPressureDTO firstOfSecond = secondTrip.get(0);
 
+            // 对于不是同一辆车或者同一天的数据直接返回
+            if (!lastOfFirst.getVin().equals(firstOfSecond.getVin())) {
+                return;
+            }
             String vin = lastOfFirst.getVin();
             String day = lastOfFirst.getDay();
 
@@ -145,7 +179,7 @@ class WaterConsumptionImplTest {
                             lastOfFirst.parseWaterLevelPressureString();
 
                     // 检测水位增加是否大于20
-                    if (waterLevelChange > 20) {
+                    if (waterLevelChange > 30) {
                         DaWaterHeight daWaterHeight = new DaWaterHeight();
 
                         daWaterHeight.setVin(vin);
@@ -160,6 +194,11 @@ class WaterConsumptionImplTest {
                         String format = String.format("行程间加水： 车辆：%s  时间： %s 水位增加 %d \n", vin, lastOfFirst.getTime(), (int) waterLevelChange);
                         System.out.printf(format);
                         dayStats.put("waterAdditionCount", dayStats.getOrDefault("waterAdditionCount", 0) + 1);
+
+                        log.info("{} , {}  ", lastOfFirst.getVin(), lastOfFirst.getDay());
+                        log.info("{} , {} ", lastOfFirst.getTime(), lastOfFirst.parseWaterLevelPressureString());
+                        log.info("{} , {}  ", firstOfSecond.getVin(), firstOfSecond.getDay());
+                        log.info("{} , {} ", firstOfSecond.getTime(), firstOfSecond.parseWaterLevelPressureString());
                     }
                 }
             } catch (ParseException e) {
@@ -203,8 +242,8 @@ class WaterConsumptionImplTest {
      * 对指定文件进行加水量判断处理
      */
 
-    @Test
-    List<DaWaterHeight> calculatedWaterConsumption(String filePath) {
+
+    List<DaWaterHeight> calculatedWaterConsumptionSingleTrip(String filePath) {
 
         WaterConsumptionListener listener = new WaterConsumptionListener();
         EasyExcelFactory.read(filePath, WaterLevelPressureDTO.class, listener).sheet().doRead();
@@ -216,7 +255,30 @@ class WaterConsumptionImplTest {
                         .thenComparing(WaterLevelPressureDTO::getTime));
 
 
-        return analyzeWaterHeight(dataList);
+        List<DaWaterHeight> waterHeightSingleTrip = analyzeWaterHeightSingleTrip(dataList);
+
+        return waterHeightSingleTrip;
+    }
+
+    List<DaWaterHeight> calculatedWaterConsumptionInterTrip(String filePath) {
+
+        WaterConsumptionListener listener = new WaterConsumptionListener();
+        EasyExcelFactory.read(filePath, WaterLevelPressureDTO.class, listener).sheet().doRead();
+        List<WaterLevelPressureDTO> dataList = listener.getDataList();
+
+        // 指定 租赁车 列表
+        List<String> specifiedVinList = Arrays.asList("LEWUMC1B3MF145710", "LEWUMC1BONF101620", "LEWUMC1BXMF145705", "LEWTEB120MF102803");
+
+        List<WaterLevelPressureDTO> collect = dataList.stream()
+                .filter(dto -> specifiedVinList.contains(dto.getVin()))
+                .sorted(Comparator.comparing(WaterLevelPressureDTO::getVin)
+                        .thenComparing(WaterLevelPressureDTO::getDay)
+                        .thenComparing(WaterLevelPressureDTO::getTime))
+                .collect(Collectors.toList());
+
+        List<DaWaterHeight> waterHeightInterTrip = analyzeWaterHeightInterTrip(collect);
+
+        return waterHeightInterTrip;
     }
 
     /**
@@ -225,7 +287,8 @@ class WaterConsumptionImplTest {
     @Test
     void testHandleProximitySwitchALLFile() {
 
-        String directoryPath = "E:\\Python_code\\bigdata-analysis-model\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202311\\";
+        String directoryPath = "E:\\Python_code\\bigdata-analysis-model" +
+                "\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202309\\";
 
         File directory = new File(directoryPath);
         File[] files = directory.listFiles();
@@ -233,9 +296,15 @@ class WaterConsumptionImplTest {
         if (files != null) {
             for (File file : files) {
                 if (file.isFile() && file.getName().endsWith(".csv") && file.getName().startsWith("merged_water_height")) {
-                    List<DaWaterHeight> list = calculatedWaterConsumption(file.getAbsolutePath());
-                    insertHeightData(list);
+                    List<DaWaterHeight> waterHeights1 = calculatedWaterConsumptionSingleTrip(file.getAbsolutePath());
+                    insertHeightData(waterHeights1);
+
                 }
+                if (file.isFile() && file.getName().endsWith(".csv") && file.getName().matches("^\\d{8}\\.csv$")) {
+                    List<DaWaterHeight> waterHeights2 = calculatedWaterConsumptionInterTrip(file.getAbsolutePath());
+                    insertHeightData(waterHeights2);
+                }
+
             }
         }
     }
@@ -249,10 +318,14 @@ class WaterConsumptionImplTest {
      */
     @Test
     void test() {
-        String filePath = "E:\\Python_code\\bigdata-analysis-model\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202311\\merged_water_height_20231101.csv";
+        String filePath1 = "E:\\Python_code\\bigdata-analysis-model\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202311\\merged_water_height_20231126.csv";
+        String filePath2 = "E:\\Python_code\\bigdata-analysis-model\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202311\\20231107.csv";
 //        insertHeightData(calculatedWaterConsumption(filePath));
-        List<DaWaterHeight> waterHeights = calculatedWaterConsumption(filePath);
-//        insertHeightData(waterHeights);
+        List<DaWaterHeight> waterHeights1 = calculatedWaterConsumptionSingleTrip(filePath1);
+        insertHeightData(waterHeights1);
+
+        List<DaWaterHeight> waterHeights2 = calculatedWaterConsumptionInterTrip(filePath2);
+        insertHeightData(waterHeights2);
     }
 
 
