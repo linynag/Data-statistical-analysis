@@ -159,6 +159,7 @@ class WaterConsumptionImplTest {
             if (!lastOfFirst.getVin().equals(firstOfSecond.getVin())) {
                 return;
             }
+
             String vin = lastOfFirst.getVin();
             String day = lastOfFirst.getDay();
 
@@ -175,7 +176,12 @@ class WaterConsumptionImplTest {
 
                 // 判断时间差是否大于60秒，如果是则检测水位增加情况
                 if (timeDifferenceInSeconds > 60) {
-                    double waterLevelChange = firstOfSecond.parseWaterLevelPressureString() -
+
+                    Double averageLastWaterLevel = secondTrip.stream()
+                            .limit(30)
+                            .collect(Collectors.averagingDouble(WaterLevelPressureDTO::parseWaterLevelPressureString));
+
+                    double waterLevelChange = averageLastWaterLevel -
                             lastOfFirst.parseWaterLevelPressureString();
 
                     // 检测水位增加是否大于20
@@ -288,7 +294,7 @@ class WaterConsumptionImplTest {
     void testHandleProximitySwitchALLFile() {
 
         String directoryPath = "E:\\Python_code\\bigdata-analysis-model" +
-                "\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202309\\";
+                "\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202311\\";
 
         File directory = new File(directoryPath);
         File[] files = directory.listFiles();
@@ -322,10 +328,10 @@ class WaterConsumptionImplTest {
         String filePath2 = "E:\\Python_code\\bigdata-analysis-model\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202311\\20231107.csv";
 //        insertHeightData(calculatedWaterConsumption(filePath));
         List<DaWaterHeight> waterHeights1 = calculatedWaterConsumptionSingleTrip(filePath1);
-        insertHeightData(waterHeights1);
+        // insertHeightData(waterHeights1);
 
         List<DaWaterHeight> waterHeights2 = calculatedWaterConsumptionInterTrip(filePath2);
-        insertHeightData(waterHeights2);
+        // insertHeightData(waterHeights2);
     }
 
 
