@@ -7,6 +7,9 @@ import java.util.Map;
 
 import static com.ly.datastatisticalanalysis.machinelearning.TFIDFUtils.*;
 
+/**
+ * 余弦相似度 计算工具类
+ */
 public class CosineSimilarityUtils {
     private static final double EPSILON = 1e-10;
 
@@ -32,7 +35,9 @@ public class CosineSimilarityUtils {
         }
     }
 
-    // 输入新语句，返回与文档中相似度最高的语句
+    /**
+     * 输入新语句，返回与文档中相似度最高的语句
+     */
     public static List<String> getSimilarStatements(String newStatement, List<String> documents, int topN) {
         // 分词并过滤
         List<String> newWords = segmentAndFilter(newStatement);

@@ -4,6 +4,9 @@ import java.util.*;
 
 import static com.ly.datastatisticalanalysis.machinelearning.CosineSimilarityUtils.getSimilarStatements;
 
+/**
+ * 推送最接近的语句
+ */
 public class SimilarityCalculator {
 
     public static void main(String[] args) {

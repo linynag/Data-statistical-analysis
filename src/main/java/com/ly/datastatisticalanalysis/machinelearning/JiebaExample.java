@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 结巴分词 效果展示
+ */
 @Slf4j
 public class JiebaExample {
     public static void main(String[] args) {

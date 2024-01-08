@@ -8,9 +8,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * TFIDF矩阵 工具类
+ */
 public class TFIDFUtils {
 
-    // 构建词汇表
+    /**
+     *  构建词汇表
+     *
+     * @param documents
+     * @return
+     */
     public static Map<String, Integer> buildVocabulary(List<String> documents) {
         Map<String, Integer> vocabulary = new HashMap<>();
         int index = 0;
@@ -28,7 +36,13 @@ public class TFIDFUtils {
         return vocabulary;
     }
 
-    // 计算 TF 矩阵
+    /**
+     *  计算 TF 矩阵
+     *
+     * @param documents
+     * @param vocabulary
+     * @return
+     */
     public static double[][] calculateTF(List<String> documents, Map<String, Integer> vocabulary) {
         int vocabSize = vocabulary.size();
         double[][] tfMatrix = new double[documents.size()][vocabSize];

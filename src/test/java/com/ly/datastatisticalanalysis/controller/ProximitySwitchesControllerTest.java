@@ -34,10 +34,13 @@ class ProximitySwitchesControllerTest {
         }
     }
 
+    /**
+     * 文件夹列表
+     */
     @Test
     void testHandleProximitySwitchALLFile() {
 
-        String directoryPath = "E:\\Python_code\\bigdata-analysis-model\\proximity_switches\\query_data\\proximity_switches\\202310\\";
+        String directoryPath = "E:\\Python_code\\bigdata-analysis-model\\proximity_switches\\query_data\\proximity_switches\\202312\\";
 
         File directory = new File(directoryPath);
         File[] files = directory.listFiles();
@@ -45,7 +48,7 @@ class ProximitySwitchesControllerTest {
         if (files != null) {
             for (File file : files) {
                 if (file.isFile() && file.getName().endsWith(".csv")) {
-                    if (isValidDateFile(file.getName(), "yyyyMMdd", "20231001", "20231031")) {
+                    if (isValidDateFile(file.getName(), "yyyyMMdd", "20231201", "20231231")) {
                         List<DaProximitySwitch> proximitySwitchVOS = proximitySwitchService.countProximitySwitches(file.getAbsolutePath());
                         Integer i = proximitySwitchService.insertProximitySwitch(proximitySwitchVOS);
                         if (i < 0) {
@@ -58,6 +61,9 @@ class ProximitySwitchesControllerTest {
         }
     }
 
+    /**
+     * 单个文件
+     */
     @Test
     void testHandleProximitySwitchMergeFile() {
         String filePath = "E:\\Python_code\\bigdata-analysis-model\\proximity_switches\\query_data\\proximity_switches\\202310\\20231005.csv";

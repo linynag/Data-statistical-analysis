@@ -289,12 +289,15 @@ class WaterConsumptionImplTest {
 
     /**
      * 对该目录下的所有的文件进行加水量判断处理
+     *
+     * calculatedWaterConsumptionSingleTrip   对单个行程内进行处理  需要车速来辅助判断
+     * calculatedWaterConsumptionInterTrip  对行程之间进行处理
      */
     @Test
     void testHandleProximitySwitchALLFile() {
 
         String directoryPath = "E:\\Python_code\\bigdata-analysis-model" +
-                "\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202311\\";
+                "\\water_consumption_of_sprinkler_trucks\\query_data\\water_level\\202312\\";
 
         File directory = new File(directoryPath);
         File[] files = directory.listFiles();
